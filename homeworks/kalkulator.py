@@ -25,16 +25,16 @@ while True:
         num2 = float(input("Podaj drugą liczbę: "))
 
     if choice == '1':
-        print(num1,'+',num2,'=',add(num1, num2))
+        print(num1,"+",num2,"=",add(num1, num2))
         break
     elif choice == '2':
-        print(num1,'-',num2,'=',subtract(num1,num2))
+        print(num1,"-",num2,"=",subtract(num1,num2))
         break
     elif choice == '3':
-        print(num1,'*',num2,'=',multiply(num1, num2))
+        print(num1,"*",num2,"=",multiply(num1, num2))
         break
     elif choice == '4':
-        print(num1,':',num2,'=',divide(num1, num2))
+        print(num1,":",num2,"=",divide(num1, num2))
         break
     else:
         print("Błędna wartość, podaj poprawną")
