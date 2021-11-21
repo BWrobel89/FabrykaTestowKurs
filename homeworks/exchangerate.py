@@ -1,5 +1,4 @@
 import csv
-
 import requests
 import time
 from datetime import datetime
@@ -61,6 +60,6 @@ def get_exchange_rate_looop():
             f.close()
         except:
             print("Oops, something went wrong! Try again later.")
-#W pliku CSV mam dodatkowe puste linie, ale nie wiem z czego wynikaja. Nie udalo mi sie ich usunac
+#W pliku CSV mam dodatkowe puste linie, ale nie wiem z czego wynikaja. Nie udalo mi sie ich usunac. W githubie wygladaja ok (bez dodatkowych lini)
 
 get_exchange_rate_looop()
