@@ -36,25 +36,25 @@ def read_request_response_time():
     print(f"Request total time {rounded_request_time} ms")
     print("------------------------------------------")
     return rounded_request_time
-    #chcialam zwracac tu tez date, ale w CSV prezentuje sie to inaczej niz bym chciala i nie moglam tego podzielic, dlatego w funckji get_exchange_rate_looop() mamy powtorzenie zmiennej date
+    #chcialam zwracac tu tez date, ale w CSV prezentuje sie to inaczej niz bym chciala jak robie return date i rounded_request_time to nie wiem jak jest podzielic na osobne wartosci, dlatego w funckji get_exchange_rate_looop() mamy powtorzenie zmiennej date
 
-execution_time = 15
-execution_end = time.time() + execution_time
-
-
-# pobieranie kursu waluty przez okres 15 sekund
+# pobieranie kursu waluty przez minute (4 razy) w interwale 15 sekundowym
 def get_exchange_rate_looop():
     with open("files/exchange_rates.csv", "w") as f:
         try:
             rate_writer = csv.writer(f)
-            rate_writer.writerow(["Currency", "Rate", "'Date , Time'", "Request time[ms]"])
+            rate_writer.writerow(["Currency", "Rate", "Date" , "Time", "Request time[ms]"])
+            iteration = 0
             while True:
-                if time.time() < execution_end:
+                if iteration < 4:
                     rate = requested_currency
                     exrate = read_currency_exchange_rate()
-                    date = (datetime.now()).strftime('%d %b %Y, %H:%M:%S') # data i godzina zgadzaja sie z tymi wypisanymi printem in read_request_response_time(). Nie jestem przekonana do poprawnosci tego podejscia.
+                    date = (datetime.now()).strftime('%d %b %Y, %H:%M:%S').split(",")
+                    # data i godzina zgadzaja sie z tymi wypisanymi printem in read_request_response_time(). Nie jestem przekonana do poprawnosci tego podejscia.
                     responsetime = read_request_response_time()
-                    rate_writer.writerow([rate, exrate, date, responsetime])
+                    rate_writer.writerow([rate, exrate, date[0], date[1], responsetime])
+                    iteration = iteration + 1
+                    time.sleep(15)  # nie wiem czy to jest najbardziej efektywne ale dziala
                 else:
                     break
             f.close()
