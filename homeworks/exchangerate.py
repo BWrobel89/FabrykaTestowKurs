@@ -6,26 +6,28 @@ from datetime import datetime
 
 # funkcja pytajaca uzykownika o kod waluty
 def input_currency_code():
-    curr = input("Podaj walute dla ktorej chcesz pobrac kurs sprzedazy: ")
-    currency = curr.upper()
+    input_curr = input("Podaj walute dla ktorej chcesz pobrac kurs sprzedazy w PLN: ")
+    currency = input_curr.upper()
     return currency
+#nie obsluzylam konkretnego bledu gdy uzytkownik wpisze walute PLN, jest tylko generyczny
+
+input_currency = input_currency_code()
+exchange_url = f"http://api.nbp.pl/api/exchangerates/rates/a/{input_currency}"
 
 
-requested_currency = input_currency_code()
-exchange_url = f"http://api.nbp.pl/api/exchangerates/rates/a/{requested_currency}"
-#Czy to dobrze aby wypisywac zmienne pomiedzy funkcjami? Funkcji i zmienne pisze w formacir text_text (czy jest to poprawne?Czy lepiej w przypadku ktorejs stosowac camelCase?)
+# Czy to dobrze aby wypisywac zmienne pomiedzy funkcjami? Funkcje i zmienne pisze w formacie text_text (czy jest to poprawne?Czy lepiej w przypadku ktorejs stosowac camelCase?)
 
 # funkcja pobierajace sredni kurs waluty podanej przez uzytkownika
 def read_currency_exchange_rate():
     currency_info = requests.get(exchange_url)
     rate_json = currency_info.json()
     exchange_rate = rate_json['rates'][0]['mid']
-    print(f"Average exchange rate for {requested_currency} is {exchange_rate}")
+    print(f"Average exchange rate for {input_currency} is {exchange_rate}")
     return exchange_rate
 
 
 # funkcja mierzaca czas wykonania zapytania
-def read_request_response_time():
+def read_currency_request_response_time():
     date = (datetime.now()).strftime("%d %b %Y, %H:%M:%S")
     start = time.time()
     currency_info = requests.get(exchange_url)
@@ -35,24 +37,26 @@ def read_request_response_time():
     print(f"Date and time: {date}")
     print(f"Request total time {rounded_request_time} ms")
     print("------------------------------------------")
-    return rounded_request_time
-    #chcialam zwracac tu tez date, ale w CSV prezentuje sie to inaczej niz bym chciala jak robie return date i rounded_request_time to nie wiem jak jest podzielic na osobne wartosci, dlatego w funckji get_exchange_rate_looop() mamy powtorzenie zmiennej date
+    return [date, rounded_request_time]
+
 
 # pobieranie kursu waluty przez minute (4 razy) w interwale 15 sekundowym
-def get_exchange_rate_looop():
+def get_exchange_rate_loop():
     with open("files/exchange_rates.csv", "w") as f:
         try:
             rate_writer = csv.writer(f)
-            rate_writer.writerow(["Currency", "Rate", "Date" , "Time", "Request time[ms]"])
+            rate_writer.writerow(["Currency", "Rate", "Date", "Time", "Request time[ms]"])
             iteration = 0
             while True:
                 if iteration < 4:
-                    rate = requested_currency
+                    currency = input_currency
                     exrate = read_currency_exchange_rate()
-                    date = (datetime.now()).strftime('%d %b %Y, %H:%M:%S').split(",")
-                    # data i godzina zgadzaja sie z tymi wypisanymi printem in read_request_response_time(). Nie jestem przekonana do poprawnosci tego podejscia.
-                    responsetime = read_request_response_time()
-                    rate_writer.writerow([rate, exrate, date[0], date[1], responsetime])
+                    exrate_data = read_currency_request_response_time()
+                    date_and_time = exrate_data[0].split(",")
+                    req_date = date_and_time[0]
+                    req_time = date_and_time[1]
+                    resp_time = exrate_data[1]
+                    rate_writer.writerow([currency, exrate, req_date, req_time, resp_time])
                     iteration = iteration + 1
                     time.sleep(15)  # nie wiem czy to jest najbardziej efektywne ale dziala
                 else:
@@ -60,6 +64,8 @@ def get_exchange_rate_looop():
             f.close()
         except:
             print("Oops, something went wrong! Try again later.")
-#W pliku CSV mam dodatkowe puste linie, ale nie wiem z czego wynikaja. Nie udalo mi sie ich usunac. W githubie wygladaja ok (bez dodatkowych lini)
 
-get_exchange_rate_looop()
+
+# W pliku CSV mam dodatkowe puste linie, ale nie wiem z czego wynikaja. Nie udalo mi sie ich usunac. W githubie wygladaja ok (bez dodatkowych lini)
+
+get_exchange_rate_loop()
