@@ -12,19 +12,16 @@ driver.get('https://fabrykatestow.pl')
 driver.maximize_window()
 
 driver.find_element(By.ID, "menu-item-1871").click()
-driver.find_element(By.XPATH, "//a[@href='https://fabrykatestow.pl/taps']/span[@class='elementor-button-content-wrapper']").click()
-#not always working
+element = driver.find_element(By.XPATH, "//a[@href='https://fabrykatestow.pl/taps' and @role='button']")
+time.sleep(5)  # required otherwise element is not clickable
 
-time.sleep(5)
+element.click()
 
 teacher_info = driver.find_element(By.XPATH, "//div[@data-id='162580f4']")
-action = ActionChains(driver)
-action.move_to_element(teacher_info)
-action.perform()
+action2 = ActionChains(driver)
+action2.move_to_element(teacher_info)
+action2.perform()
 
 driver.save_screenshot("files/screenshot.png")
-
-
-time.sleep(5)
 
 driver.quit()
