@@ -3,10 +3,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import *
-from helpers.DataGenerator import DataGenerator
+from tests.helpers.DataGenerator import DataGenerator
 
 def hover_over_element(driver_instance, xpath):
-   elem = driver_instance.find_element_by_xpath(xpath)
+   elem = driver_instance.find_element(By.XPATH, xpath)
    hover = ActionChains(driver_instance).move_to_element(elem)
    hover.perform()
 
@@ -14,6 +14,13 @@ def hover_over_element(driver_instance, xpath):
 def wait_for_visibility_of_element(driver_instance, xpath, time_to_wait=10):
    try:
        elem = WebDriverWait(driver_instance, time_to_wait).until(EC.visibility_of_element_located((By.XPATH, xpath)))
+   except TimeoutException:
+       elem = False
+   return elem
+
+def wait_for_visibility_of_element_id(driver_instance, ID, time_to_wait=10):
+   try:
+       elem = WebDriverWait(driver_instance, time_to_wait).until(EC.visibility_of_element_located((By.ID, ID)))
    except TimeoutException:
        elem = False
    return elem
